@@ -1,9 +1,9 @@
 'use strict';
 
+const methods = require('methods');
 const debug = require('./../Utils').debug;
 const flatten = require('./../Utils').flatten;
 const Layer = require('./Layer');
-const methods = require('methods');
 
 /**
  * Module variables.

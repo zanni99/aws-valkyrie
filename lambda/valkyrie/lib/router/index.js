@@ -3,6 +3,7 @@
  * Copyright(c) 2009-2013 TJ Holowaychuk
  * Copyright(c) 2013 Roman Shtylman
  * Copyright(c) 2014-2015 Douglas Christopher Wilson
+ * Copyright(c) 2017 Giovanni Bruno
  * MIT Licensed
  */
 
@@ -13,23 +14,24 @@
  * @private
  */
 
-var Route = require('./Route');
-var Layer = require('./Layer');
-var methods = require('methods');
-var mixin = require('utils-merge');
-var debug = require('debug')('express:router');
-var deprecate = require('depd')('express');
-var flatten = require('array-flatten');
+const methods = require('methods');
+const Route = require('./Route');
+const Layer = require('./Layer');
+const debug = require('./../Utils').debug;
+const flatten = require('./../Utils').flatten;
+
+//TODO questi bisogna levarli
 var parseUrl = require('parseurl');
+var mixin = require('utils-merge');
 
 /**
  * Module variables.
  * @private
  */
 
-var objectRegExp = /^\[object (\S+)\]$/;
-var slice = Array.prototype.slice;
-var toString = Object.prototype.toString;
+const objectRegExp = /^\[object (\S+)\]$/;
+const slice = Array.prototype.slice;
+const toString = Object.prototype.toString;
 
 /**
  * Initialize a new `Router` with the given `options`.
@@ -95,21 +97,21 @@ var proto = module.exports = function(options) {
 
 proto.param = function param(name, fn) {
   // param logic
-  if (typeof name === 'function') {
-    deprecate('router.param(fn): Refactor to use path params');
-    this._params.push(name);
-    return;
-  }
+  // if (typeof name === 'function') {
+  //   deprecate('router.param(fn): Refactor to use path params');
+  //   this._params.push(name);
+  //   return;
+  // }
 
   // apply param functions
   var params = this._params;
   var len = params.length;
   var ret;
 
-  if (name[0] === ':') {
-    deprecate('router.param(' + JSON.stringify(name) + ', fn): Use router.param(' + JSON.stringify(name.substr(1)) + ', fn) instead');
-    name = name.substr(1);
-  }
+  // if (name[0] === ':') {
+  //   deprecate('router.param(' + JSON.stringify(name) + ', fn): Use router.param(' + JSON.stringify(name.substr(1)) + ', fn) instead');
+  //   name = name.substr(1);
+  // }
 
   for (var i = 0; i < len; ++i) {
     if (ret = params[i](name, fn)) {

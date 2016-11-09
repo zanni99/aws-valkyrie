@@ -15,7 +15,7 @@
 
 var debug = require('debug')('express:router:route');
 var flatten = require('array-flatten');
-var Layer = require('./layer');
+var Layer = require('./Layer');
 var methods = require('methods');
 
 /**

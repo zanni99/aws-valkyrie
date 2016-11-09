@@ -1,6 +1,6 @@
 'use strict';
 
-const valkyrie = require('./valkyrie/valkyrie');
+const valkyrie = require('./valkyrie/lib/express');
 const app = new valkyrie();
 const router = valkyrie.Router();
 const router2 = valkyrie.Router();
@@ -22,7 +22,7 @@ exports.handler = (req, context, callback) => {
     next('route');
   };
 
-  app.use('/test-next', middle1, middle1, middle1, skipMiddle, middle1, middle1, (req, res) => {
+  app.use('/test-next', middle1, middle1, router, middle1, skipMiddle, middle1, middle1, (req, res) => {
     res.send('test-next')
   });
 
@@ -83,6 +83,7 @@ exports.handler = (req, context, callback) => {
     next()
   });
 
-  app.describe();
+  //app.listen(8080, () => {console.log('listening 8080')})
+  //app.describe();
   app.start(req, context, callback);
 };

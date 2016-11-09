@@ -2,7 +2,7 @@
 
 const pathToRegexp     = require('path-to-regexp');
 const Layer            = require('./Layer');
-const Utils            = require('./../Utils');
+const Utils            = require('./../../lib/Utils');
 const supportedMethods = require('./../methods');
 
 supportedMethods.push('all');

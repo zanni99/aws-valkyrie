@@ -1,7 +1,7 @@
 'use strict';
 
 const supportedMethods = require('./../methods');
-const Utils = require('./../Utils');
+const Utils = require('./../../lib/Utils');
 const Route = require('./Route');
 
 supportedMethods.push('all');

@@ -141,6 +141,7 @@ proto.handle = function handle(req, res, out) {
   var pathlength = search ? search - 1 : req.url.length;
   var fqdn = req.url[0] !== '/' && 1 + req.url.substr(0, pathlength).indexOf('://');
   var protohost = fqdn ? req.url.substr(0, req.url.indexOf('/', 2 + fqdn)) : '';
+
   var idx = 0;
   var removed = '';
   var slashAdded = false;
@@ -158,6 +159,7 @@ proto.handle = function handle(req, res, out) {
   var parentUrl = req.baseUrl || '';
   var done = restore(out, req, 'baseUrl', 'next', 'params');
 
+  console.log('baseUrl', req.baseUrl);
   // setup next layer
   req.next = next;
 
@@ -231,6 +233,7 @@ proto.handle = function handle(req, res, out) {
       }
 
       if (layerError) {
+        console.log(layerError)
         // routes do not match with a pending error
         match = false;
         continue;
@@ -285,8 +288,8 @@ proto.handle = function handle(req, res, out) {
     var c = path[layerPath.length];
     if (c && '/' !== c && '.' !== c) return next(layerError);
 
-     // Trim off the part of the url that matches the route
-     // middleware (.use stuff) needs to have the path stripped
+    // Trim off the part of the url that matches the route
+    // middleware (.use stuff) needs to have the path stripped
     if (layerPath.length !== 0) {
       debug('trim prefix (%s) from url %s', layerPath, req.url);
       removed = layerPath;
@@ -300,8 +303,8 @@ proto.handle = function handle(req, res, out) {
 
       // Setup base URL (no trailing slash)
       req.baseUrl = parentUrl + (removed[removed.length - 1] === '/'
-        ? removed.substring(0, removed.length - 1)
-        : removed);
+          ? removed.substring(0, removed.length - 1)
+          : removed);
     }
 
     debug('%s %s : %s', layer.name, layerPath, req.originalUrl);
@@ -525,6 +528,7 @@ function appendMethods(list, addition) {
 // get pathname of request
 function getPathname(req) {
   try {
+    console.log('pathname', parseUrl(req).pathname);
     return parseUrl(req).pathname;
   } catch (err) {
     return undefined;

@@ -3,7 +3,7 @@ module.exports = function(path, method) {
   method = method || 'GET';
   return {
     "resource": "/{proxy+}",
-    "path": path,
+    "url": path,
     "httpMethod": method,
     "headers": {
       "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",

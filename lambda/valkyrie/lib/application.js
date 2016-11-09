@@ -157,9 +157,9 @@ app.lazyrouter = function lazyrouter() {
 app.handle = function handle(req, res, callback) {
   var router = this._router;
 
-  console.log(req.path);
+  console.log('app.handle ====>',req.path);
   // final handler
-  var done = callback || function() { res.send(); };//finalhandler(req, res, {
+  var done = callback || function() { res.status(500).send('layer error'); };//finalhandler(req, res, {
     //env: this.get('env'),
  //   onerror: logerror.bind(this)
   //});
@@ -170,7 +170,6 @@ app.handle = function handle(req, res, callback) {
     done();
     return;
   }
-
   router.handle(req, res, done);
 };
 
@@ -617,22 +616,24 @@ app.render = function render(name, options, callback) {
 //const formatRequest = require('./../old_lib/format-request');
 
 app.start = function (req, context, callback) {
+  console.log('started');
   this._started = true;
 
   this.response.context = context;
   this.response.callback = callback;
 
-  const r = Object.assign({}, this.request, req);
+  //const r = Object.assign({}, this.request, req);
+
   //console.log(r);
   //this.response.send('ciaone');
   //this.response.send('ciao');
-  //this.req = formatRequest(req, this);
+  const formatRequest = require('./../old_lib/format-request');
+  this.req = formatRequest(req, this);
   //this.res = new Response(this);
 
   //this.req.res = this.res;
   //this.res.req = this.req;
-
-  app.handle(r, this.response)
+  this.handle(req, this.response)
 };
 
 app.listen = function listen() {

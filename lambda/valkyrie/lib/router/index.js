@@ -13,8 +13,8 @@
  * @private
  */
 
-var Route = require('./route');
-var Layer = require('./layer');
+var Route = require('./Route');
+var Layer = require('./Layer');
 var methods = require('methods');
 var mixin = require('utils-merge');
 var debug = require('debug')('express:router');

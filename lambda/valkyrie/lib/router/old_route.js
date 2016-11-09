@@ -198,7 +198,7 @@ methods.forEach(function(method){
 
       debug('%s %s', method, this.path);
 
-      var layer = Layer('/', {}, handle);
+      var layer = new Layer('/', {}, handle);
       layer.method = method;
 
       this.methods[method] = true;

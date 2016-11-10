@@ -147,7 +147,7 @@ proto.handle = function handle(req, res, out) {
 
   // setup basic req values
   req.basePath = parentPath;
-  req.originalUrl = req.originalUrl || req.url;
+  req.originalPath = req.originalPath || req.url;
 
   next();
 
@@ -236,7 +236,7 @@ proto.handle = function handle(req, res, out) {
     // Trim off the part of the url that matches the route
     // middleware (.use stuff) needs to have the path stripped
     if (layerPath.length !== 0) {
-      debug('trim prefix (%s) from url %s', layerPath, req.url);
+      debug(`trim prefix (${layerPath}) from url ${req.url}`);
       removed = layerPath;
       req.url = req.url.substr(removed.length);
 
@@ -250,7 +250,7 @@ proto.handle = function handle(req, res, out) {
       req.basePath = parentPath + (removed[removed.length - 1] === '/' ? removed.substring(0, removed.length - 1) : removed);
     }
 
-    debug(`${layer.name} ${layerPath} : ${req.originalUrl}`);
+    debug(`${layer.name} ${layerPath} : ${req.originalPath}`);
 
     if (layerError) layer.handle_error(layerError, req, res, next);
     else layer.handle_request(req, res, next);

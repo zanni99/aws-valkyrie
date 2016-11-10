@@ -13,7 +13,7 @@ const Layer = require('./Layer');
 var slice = Array.prototype.slice;
 var toString = Object.prototype.toString;
 
-module.exports = class Route {
+class Route {
   /**
    * Initialize `Route` with the given `path`,
    *
@@ -28,14 +28,6 @@ module.exports = class Route {
 
     // route handlers for various http methods
     this.methods = {};
-
-    const l = methods.length;
-    for (let i = 0; i < l; i++) {
-      const method = methods[i];
-      this[method] = function() {
-        return this._add_layer(method, flatten(Array.from(arguments)));
-      }
-    }
   }
 
   /**
@@ -171,4 +163,14 @@ module.exports = class Route {
     return this;
   };
 
-};
+}
+
+const l = methods.length;
+for (let i = 0; i < l; i++) {
+  const method = methods[i];
+  Route.prototype[method] = function() {
+    return this._add_layer(method, flatten(Array.from(arguments)));
+  }
+}
+
+module.exports = Route;

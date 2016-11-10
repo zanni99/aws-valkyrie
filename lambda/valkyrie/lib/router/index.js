@@ -41,15 +41,9 @@ const toString = Object.prototype.toString;
  * @public
  */
 
-
-module.exports = class Router {
-  constructor(options)
-  {
+class Router {
+  constructor(options) {
     const opts = options || {};
-
-    function router(req, res, next) {
-      this.handle(req, res, next);
-    }
 
     // mixin Router class functions
 
@@ -59,15 +53,6 @@ module.exports = class Router {
     this.mergeParams = opts.mergeParams;
     this.strict = opts.strict;
     this.stack = [];
-
-    // create Router#VERB functions
-    methods.concat('all').forEach(function(method){
-      proto[method] = function(path){
-        var route = this.route(path);
-        route[method].apply(route, slice.call(arguments, 1));
-        return this;
-      };
-    });
 
     return this;
   };
@@ -652,3 +637,18 @@ function wrap(old, fn) {
     fn.apply(this, args);
   };
 }
+
+// create Router#VERB functions
+const l = methods.concat('all').length;
+for (let i = 0; i < l; i++) {
+  const method = methods[i];
+  Router.prototype[method] = function(path){
+    var route = this.route(path);
+    route[method].apply(route, slice.call(arguments, 1));
+    return this;
+  };
+}
+
+Router.prototype.call = (req,res,next) => this.handle(req, res, next);
+
+module.exports = Router;

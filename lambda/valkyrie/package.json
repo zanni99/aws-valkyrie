@@ -2,7 +2,7 @@
   "name": "aws-valkyrie",
   "version": "0.5.3",
   "description": "Simple, Express inspired, web framework for AWS Lambda & Api Gateway",
-  "main": "valkyrie.js",
+  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/giowe/aws-valkyrie.git"

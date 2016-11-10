@@ -214,6 +214,7 @@ app.use = function use(fn) {
   var router = this._router;
 
   fns.forEach(function (fn) {
+    console.log('ffffff', path)
     // non-express app
     if (!fn || !fn.handle || !fn.set) {
       return router.use(path, fn);

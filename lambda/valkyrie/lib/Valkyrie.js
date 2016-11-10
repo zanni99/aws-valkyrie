@@ -18,7 +18,7 @@ var proto = require('./application');
 var Route = require('./router/route');
 var Router = require('./router');
 //var req = require('./request');
-var res = require('./response');
+const Response = require('./response');
 
 /**
  * Expose `createApplication()`.
@@ -41,7 +41,7 @@ module.exports = class Valkyrie {
     mixin(app, proto, false);
 
     app.request = {}//{ __proto__: req, app: app };
-    app.response = { __proto__: res, app: app };
+    app.response = new Response(app);
     app.init();
     return app;
   }

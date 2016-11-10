@@ -5,5 +5,6 @@ module.exports = (req, app) => {
   req.params = {};
   req.httpMethod = req.httpMethod.toUpperCase();
   req.method = req.httpMethod;
+  req.url = req.path;
   return req;
 };

@@ -626,7 +626,7 @@ app.start = function (req, context, callback) {
   //console.log(r);
   //this.response.send('ciaone');
   //this.response.send('ciao');
-  const formatRequest = require('./../old_lib/format-request');
+  const formatRequest = require('./format-request');
   this.req = formatRequest(req, this);
   //this.res = new Response(this);
 

@@ -468,6 +468,7 @@ function matchLayer(layer, path) {
   try {
     return layer.match(path);
   } catch (err) {
+    debug.log('Layer error!!!', err);
     return err;
   }
 }

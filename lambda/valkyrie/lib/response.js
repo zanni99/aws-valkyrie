@@ -170,9 +170,9 @@ module.exports = class Response {
       this.removeHeader('Transfer-Encoding');
       chunk = '';
     }
-
+//TODO da attivare appena inietto la request qui dentro
     //skip body for HEAD
-    if (req.method === 'HEAD') chunk = '';
+//    if (req.method === 'HEAD') chunk = '';
 
     const response = {
       statusCode: this.statusCode,

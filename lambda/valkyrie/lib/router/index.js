@@ -100,7 +100,7 @@ proto.param = function param(name, fn) {
   // ensure we end up with a
   // middleware function
   if ('function' !== typeof fn) {
-    throw new Error('invalid param() call for ' + name + ', got ' + fn);
+    throw new Error(`invalid param() call for ${name}, got ${fn}`);
   }
 
   (this.params[name] = this.params[name] || []).push(fn);
@@ -348,7 +348,7 @@ proto.process_params = function process_params(layer, called, req, res, done) {
  *
  * Use (like `.all`) will run for any http METHOD, but it will not add
  * handlers for those methods so OPTIONS requests will not consider `.use`
- * functions even if they could respond.
+ * functions even if they could rfespond.
  *
  * The other difference is that _route_ path is stripped and not visible
  * to the handler function. The main effect of this feature is that mounted

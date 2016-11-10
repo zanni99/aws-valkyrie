@@ -12,8 +12,9 @@
  * @private
  */
 
+const statusCodes = http.STATUS_CODES;
+
 var contentDisposition = require('content-disposition');
-var deprecate = require('depd')('express');
 var encodeUrl = require('encodeurl');
 var escapeHtml = require('escape-html');
 var http = require('http');
@@ -25,7 +26,6 @@ var sign = require('cookie-signature').sign;
 var normalizeType = require('./utils').normalizeType;
 var normalizeTypes = require('./utils').normalizeTypes;
 var setCharset = require('./utils').setCharset;
-var statusCodes = http.STATUS_CODES;
 var cookie = require('cookie');
 var send = require('send');
 var extname = path.extname;
@@ -105,31 +105,6 @@ res.send = function send(body) {
 
   // settings
   var app = this.app;
-
-  // allow status / body
-  if (arguments.length === 2) {
-    // res.send(body, status) backwards compat
-    if (typeof arguments[0] !== 'number' && typeof arguments[1] === 'number') {
-      deprecate('res.send(body, status): Use res.status(status).send(body) instead');
-      this.statusCode = arguments[1];
-    } else {
-      deprecate('res.send(status, body): Use res.status(status).send(body) instead');
-      this.statusCode = arguments[0];
-      chunk = arguments[1];
-    }
-  }
-
-  // disambiguate res.send(status) and res.send(status, num)
-  if (typeof chunk === 'number' && arguments.length === 1) {
-    // res.send(status) will set status message as text string
-    if (!this.get('Content-Type')) {
-      this.type('txt');
-    }
-
-    deprecate('res.send(status): Use res.sendStatus(status) instead');
-    this.statusCode = chunk;
-    chunk = statusCodes[chunk];
-  }
 
   switch (typeof chunk) {
     // string defaulting to html
@@ -231,19 +206,6 @@ res.send = function send(body) {
 res.json = function json(obj) {
   var val = obj;
 
-  // allow status / body
-  if (arguments.length === 2) {
-    // res.json(body, status) backwards compat
-    if (typeof arguments[1] === 'number') {
-      deprecate('res.json(obj, status): Use res.status(status).json(obj) instead');
-      this.statusCode = arguments[1];
-    } else {
-      deprecate('res.json(status, obj): Use res.status(status).json(obj) instead');
-      this.statusCode = arguments[0];
-      val = arguments[1];
-    }
-  }
-
   // settings
   var app = this.app;
   var replacer = app.get('json replacer');
@@ -272,19 +234,6 @@ res.json = function json(obj) {
 
 res.jsonp = function jsonp(obj) {
   var val = obj;
-
-  // allow status / body
-  if (arguments.length === 2) {
-    // res.json(body, status) backwards compat
-    if (typeof arguments[1] === 'number') {
-      deprecate('res.jsonp(obj, status): Use res.status(status).json(obj) instead');
-      this.statusCode = arguments[1];
-    } else {
-      deprecate('res.jsonp(status, obj): Use res.status(status).jsonp(obj) instead');
-      this.statusCode = arguments[0];
-      val = arguments[1];
-    }
-  }
 
   // settings
   var app = this.app;
@@ -496,9 +445,6 @@ res.sendfile = function (path, options, callback) {
     }
   });
 };
-
-res.sendfile = deprecate.function(res.sendfile,
-  'res.sendfile: Use res.sendFile instead');
 
 /**
  * Transfer the file at the given `path` as an attachment.
@@ -868,14 +814,9 @@ res.redirect = function redirect(url) {
   var status = 302;
 
   // allow status / url
-  if (arguments.length === 2) {
-    if (typeof arguments[0] === 'number') {
-      status = arguments[0];
-      address = arguments[1];
-    } else {
-      deprecate('res.redirect(url, status): Use res.redirect(status, url) instead');
-      status = arguments[1];
-    }
+  if (arguments.length === 2 && typeof arguments[0] === 'number') {
+    status = arguments[0];
+    address = arguments[1];
   }
 
   // Set location header
@@ -918,14 +859,7 @@ res.redirect = function redirect(url) {
  */
 
 res.vary = function(field){
-  // checks for back-compat
-  if (!field || (Array.isArray(field) && !field.length)) {
-    deprecate('res.vary(): Provide a field name');
-    return this;
-  }
-
   vary(this, field);
-
   return this;
 };
 

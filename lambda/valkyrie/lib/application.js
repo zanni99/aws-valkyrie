@@ -640,6 +640,11 @@ app.listen = function listen() {
   return server.listen.apply(server, arguments);
 };
 
+app.describe = function () {
+  console.log('Application');
+  this._router.describe('   ');
+};
+
 /**
  * Log error using console.error.
  *

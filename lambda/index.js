@@ -78,7 +78,7 @@ exports.handler = (req, context, callback) => {
     res.send('hi, this is router2!');
   });
 
-  app.use('/router/:altro/', router);
+  app.use('/router/', router);
 
   //router.use('/router2', router2);
 
@@ -88,6 +88,6 @@ exports.handler = (req, context, callback) => {
   });
 
   //app.listen(8080, () => {console.log('listening 8080')})
-  //app.describe();
+  app.describe();
   app.start(req, context, callback);
 };

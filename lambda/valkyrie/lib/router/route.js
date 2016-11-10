@@ -10,7 +10,6 @@ const Layer = require('./layer');
  * @private
  */
 
-var slice = Array.prototype.slice;
 var toString = Object.prototype.toString;
 
 class Route {
@@ -35,7 +34,6 @@ class Route {
    * @private
    */
   _handles_method(method) {
-    //todo _all o all ?
     if (this.methods._all) return true;
 
     //todo questo facilmente sono certo sia gia' in lower, potro' evitare
@@ -163,6 +161,13 @@ class Route {
     return this;
   };
 
+  //todo potrebbe essere utile se e quando passo al patten a classi, se lo faccio
+  //describe(indent) {
+  //  console.log(`${indent || ''}Route - [${this.methods || ''}] ${this.path}`);
+  //  const stack = this.stack;
+  //  const l = stack.length;
+  //  for (let i = 0; i < l; i++) stack[i].describe(indent + '   ');
+  //}
 }
 
 const l = methods.length;

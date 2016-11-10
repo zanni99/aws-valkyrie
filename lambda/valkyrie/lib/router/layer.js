@@ -28,7 +28,6 @@ module.exports = class Layer {
     this.params = undefined;
     this.path = undefined;
     this.regexp = pathRegexp(path, this.keys = [], opts);
-
     if (path === '/' && opts.end === false) {
       this.regexp.fast_slash = true;
     }
@@ -129,6 +128,13 @@ module.exports = class Layer {
     }
 
     return true;
+  }
+
+  describe(indent) {
+    console.log(`${indent || ''}Layer - ${this.name} [${this.route? Object.keys(this.route.methods) : ''}] ${this.route? '\u001b[36m' + this.route.path + '\u001b[39m': ''}`);
+    if (this.handle.describe) {
+      this.handle.describe(indent + '   ');
+    }
   }
 };
 

@@ -384,7 +384,6 @@ proto.use = function use(fn) {
 
   for (var i = 0; i < l; i++) {
     const fn = callbacks[i];
-
     if (typeof fn !== 'function') throw new TypeError(`Router.use() requires middleware function but got a ${fn.costructor.name}`);
 
     // add the middleware
@@ -403,7 +402,6 @@ proto.use = function use(fn) {
 
   return this;
 };
-
 /**
  * Create a new Route for the given path.
  *
@@ -430,6 +428,13 @@ proto.route = function route(path) {
 
   this.stack.push(layer);
   return route;
+};
+
+proto.describe = function describe(indent) {
+  console.log(`${indent || ''}Router`);
+  const stack = this.stack;
+  const l = stack.length;
+  for (let i = 0; i < l; i++) stack[i].describe(indent + '   ');
 };
 
 // create Router#VERB functions

@@ -115,7 +115,7 @@ proto.param = function param(name, fn) {
 proto.handle = function handle(req, res, out) {
   const self = this;
 
-  debug('dispatching %s %s', req.method, req.url);
+  debug(`dispatching ${req.method} ${req.url}`);
 
   let idx = 0;
   let removed = '';
@@ -152,9 +152,7 @@ proto.handle = function handle(req, res, out) {
   next();
 
   function next(err) {
-    var layerError = err === 'route'
-      ? null
-      : err;
+    let layerError = err === 'route' ? null : err;
 
     // remove added slash
     if (slashAdded) {
@@ -183,78 +181,56 @@ proto.handle = function handle(req, res, out) {
     var match;
     var route;
 
-    while (match !== true && idx < stack.length) {
+    const l = stack.length;
+    while (match !== true && idx < l) {
       layer = stack[idx++];
       match = matchLayer(layer, path);
       route = layer.route;
 
-      if (typeof match !== 'boolean') {
-        // hold on to layerError
-        layerError = layerError || match;
-      }
+      // hold on to layerError
+      if (typeof match !== 'boolean') layerError = layerError || match;
 
-      if (match !== true) {
-        continue;
-      }
+      if (match !== true) continue;
 
-      if (!route) {
-        // process non-route handlers normally
-        continue;
-      }
+      // process non-route handlers normally
+      if (!route) continue;
 
+      // routes do not match with a pending error
       if (layerError) {
-        // routes do not match with a pending error
         match = false;
         continue;
       }
 
-      var method = req.method;
-      var has_method = route._handles_method(method);
+      const method = req.method;
+      const has_method = route._handles_method(method);
 
       // build up automatic options response
-      if (!has_method && method === 'OPTIONS') {
-        appendMethods(options, route._options());
-      }
+      if (!has_method && method === 'OPTIONS') appendMethods(options, route._options());
 
       // don't even bother matching route
-      if (!has_method && method !== 'HEAD') {
-        match = false;
-        continue;
-      }
+      if (!has_method && method !== 'HEAD') match = false;
     }
 
     // no match
-    if (match !== true) {
-      return done(layerError);
-    }
+    if (match !== true) return done(layerError);
 
     // store route for dispatch on change
-    if (route) {
-      req.route = route;
-    }
+    if (route) req.route = route;
 
     // Capture one-time layer values
-    req.params = self.mergeParams
-      ? mergeParams(layer.params, parentParams)
-      : layer.params;
-    var layerPath = layer.path;
+    req.params = self.mergeParams ? mergeParams(layer.params, parentParams) : layer.params;
+    const layerPath = layer.path;
 
     // this should be done for the layer
     self.process_params(layer, paramcalled, req, res, function (err) {
-      if (err) {
-        return next(layerError || err);
-      }
-
-      if (route) {
-        return layer.handle_request(req, res, next);
-      }
-
+      if (err) return next(layerError || err);
+      if (route) return layer.handle_request(req, res, next);
       trim_prefix(layer, layerError, layerPath, path);
     });
   }
 
   function trim_prefix(layer, layerError, layerPath, path) {
-    var c = path[layerPath.length];
+    const c = path[layerPath.length];
     if (c && '/' !== c && '.' !== c) return next(layerError);
 
     // Trim off the part of the url that matches the route
@@ -271,18 +247,13 @@ proto.handle = function handle(req, res, out) {
       }
 
       // Setup base URL (no trailing slash)
-      req.basePath = parentPath + (removed[removed.length - 1] === '/'
-          ? removed.substring(0, removed.length - 1)
-          : removed);
+      req.basePath = parentPath + (removed[removed.length - 1] === '/' ? removed.substring(0, removed.length - 1) : removed);
     }
 
-    debug('%s %s : %s', layer.name, layerPath, req.originalUrl);
+    debug(`${layer.name} ${layerPath} : ${req.originalUrl}`);
 
-    if (layerError) {
-      layer.handle_error(layerError, req, res, next);
-    } else {
-      layer.handle_request(req, res, next);
-    }
+    if (layerError) layer.handle_error(layerError, req, res, next);
+    else layer.handle_request(req, res, next);
   }
 };
 

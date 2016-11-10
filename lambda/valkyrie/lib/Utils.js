@@ -56,7 +56,8 @@ module.exports = class Utils {
   }
 
   static debug(prefix, color) {
-    color = 'red';
+    prefix = prefix || 'debug';
+    color = color || 'cyan';
     if (color) prefix = `\u001b[${colors[color]}m${prefix}\u001b[39m:`;
     return function () {
       const args = Array.from(arguments);
@@ -71,6 +72,5 @@ const colors = {
   'yellow': 33,
   'blue': 34,
   'magenta': 35,
-  'cyan': 36,
-  'default': 39
+  'cyan': 36
 };

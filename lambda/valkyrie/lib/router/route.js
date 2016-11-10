@@ -1,7 +1,7 @@
 'use strict';
 
 const methods = require('methods');
-const debug = require('./../Utils').debug('valkyrie:route');
+const debug = require('./../Utils').debug('valkyrie:route', 'cyan');
 const flatten = require('./../Utils').flatten;
 const Layer = require('./layer');
 

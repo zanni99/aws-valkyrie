@@ -5,7 +5,7 @@
  * @private
  */
 const pathRegexp = require('path-to-regexp');
-const debug = require('./../Utils').debug('valkyrie:route');
+const debug = require('./../Utils').debug('valkyrie:route', 'yellow');
 
 /**
  * Module variables.

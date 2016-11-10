@@ -70,6 +70,10 @@ exports.handler = (req, context, callback) => {
     res.send(`I just want to say "${req.params.text}"`);
   });
 
+  router.get('/say', (req, res, next) => {
+    res.send(`simple say`);
+  });
+
   router2.get('/hi', (req, res, next) => {
     res.send('hi, this is router2!');
   });

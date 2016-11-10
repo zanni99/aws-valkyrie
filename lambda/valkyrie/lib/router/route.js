@@ -3,7 +3,7 @@
 const methods = require('methods');
 const debug = require('./../Utils').debug;
 const flatten = require('./../Utils').flatten;
-const Layer = require('./Layer');
+const Layer = require('./layer');
 
 /**
  * Module variables.

@@ -15,9 +15,9 @@
 var EventEmitter = require('events').EventEmitter;
 var mixin = require('merge-descriptors');
 var proto = require('./application');
-var Route = require('./router/Route');
+var Route = require('./router/route');
 var Router = require('./router');
-var req = require('./request');
+//var req = require('./request');
 var res = require('./response');
 
 /**
@@ -40,7 +40,7 @@ module.exports = class Valkyrie {
     mixin(app, EventEmitter.prototype, false);
     mixin(app, proto, false);
 
-    app.request = { __proto__: req, app: app };
+    app.request = {}//{ __proto__: req, app: app };
     app.response = { __proto__: res, app: app };
     app.init();
     return app;

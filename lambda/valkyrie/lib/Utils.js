@@ -55,9 +55,22 @@ module.exports = class Utils {
     return out;
   }
 
-  static debug(prefix) {
+  static debug(prefix, color) {
+    color = 'red';
+    if (color) prefix = `\u001b[${colors[color]}m${prefix}\u001b[39m:`;
     return function () {
-      console.log.apply(console, prefix, Array.from(arguments));
+      const args = Array.from(arguments);
+      console.log.apply(console, [prefix].concat(args));
     };
   }
+};
+
+const colors = {
+  'red': 31,
+  'green': 32,
+  'yellow': 33,
+  'blue': 34,
+  'magenta': 35,
+  'cyan': 36,
+  'default': 39
 };

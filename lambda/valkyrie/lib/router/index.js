@@ -21,14 +21,12 @@ const flatten = require('./../Utils').flatten;
 
 //todo questi devono andare
 var mixin = require('utils-merge');
-var parseUrl = require('parseurl');
 
 /**
  * Module variables.
  * @private
  */
 
-const objectRegExp = /^\[object (\S+)\]$/;
 const slice = Array.prototype.slice;
 const toString = Object.prototype.toString;
 
@@ -123,27 +121,22 @@ proto.handle = function handle(req, res, out) {
 
   debug('dispatching %s %s', req.method, req.url);
 
-  var search = 1 + req.url.indexOf('?');
-  var pathlength = search ? search - 1 : req.url.length;
-  var fqdn = req.url[0] !== '/' && 1 + req.url.substr(0, pathlength).indexOf('://');
-  var protohost = fqdn ? req.url.substr(0, req.url.indexOf('/', 2 + fqdn)) : '';
-
-  var idx = 0;
-  var removed = '';
-  var slashAdded = false;
-  var paramcalled = {};
+  let idx = 0;
+  let removed = '';
+  let slashAdded = false;
+  const paramcalled = {};
 
   // store options for OPTIONS request
   // only used if OPTIONS request
-  var options = [];
+  const options = [];
 
   // middleware and routes
-  var stack = self.stack;
+  const stack = self.stack;
 
   // manage inter-router variables
-  var parentParams = req.params;
-  var parentUrl = req.baseUrl || '';
-  var done = restore(out, req, 'baseUrl', 'next', 'params');
+  const parentParams = req.params;
+  const parentPath = req.basePath || '';
+  let done = restore(out, req, 'basePath', 'next', 'params');
 
   // setup next layer
   req.next = next;
@@ -157,7 +150,7 @@ proto.handle = function handle(req, res, out) {
   }
 
   // setup basic req values
-  req.baseUrl = parentUrl;
+  req.basePath = parentPath;
   req.originalUrl = req.originalUrl || req.url;
 
   next();
@@ -175,8 +168,8 @@ proto.handle = function handle(req, res, out) {
 
     // restore altered req.url
     if (removed.length !== 0) {
-      req.baseUrl = parentUrl;
-      req.url = protohost + removed + req.url.substr(protohost.length);
+      req.basePath = parentPath;
+      req.url = removed + req.url;
       removed = '';
     }
 
@@ -187,11 +180,7 @@ proto.handle = function handle(req, res, out) {
     }
 
     // get pathname of request
-    var path = getPathname(req);
-
-    if (path == null) {
-      return done(layerError);
-    }
+    var path = req.url;
 
     // find next matching layer
     var layer;
@@ -277,16 +266,16 @@ proto.handle = function handle(req, res, out) {
     if (layerPath.length !== 0) {
       debug('trim prefix (%s) from url %s', layerPath, req.url);
       removed = layerPath;
-      req.url = protohost + req.url.substr(protohost.length + removed.length);
+      req.url = req.url.substr(removed.length);
 
       // Ensure leading slash
-      if (!fqdn && req.url[0] !== '/') {
+      if (req.url[0] !== '/') {
         req.url = '/' + req.url;
         slashAdded = true;
       }
 
       // Setup base URL (no trailing slash)
-      req.baseUrl = parentUrl + (removed[removed.length - 1] === '/'
+      req.basePath = parentPath + (removed[removed.length - 1] === '/'
           ? removed.substring(0, removed.length - 1)
           : removed);
     }
@@ -307,50 +296,40 @@ proto.handle = function handle(req, res, out) {
  */
 
 proto.process_params = function process_params(layer, called, req, res, done) {
-  var params = this.params;
+  const params = this.params;
 
   // captured parameters from the layer, keys and values
-  var keys = layer.keys;
+  const keys = layer.keys;
 
   // fast track
-  if (!keys || keys.length === 0) {
-    return done();
-  }
+  if (!keys || keys.length === 0) return done();
 
-  var i = 0;
-  var name;
-  var paramIndex = 0;
-  var key;
-  var paramVal;
-  var paramCallbacks;
-  var paramCalled;
+  let i = 0;
+  let name;
+  let paramIndex = 0;
+  let key;
+  let paramVal;
+  let paramCallbacks;
+  let paramCalled;
 
   // process params in order
   // param callbacks can be async
   function param(err) {
-    if (err) {
-      return done(err);
-    }
+    if (err) return done(err);
 
-    if (i >= keys.length ) {
-      return done();
-    }
+    if (i >= keys.length ) return done();
 
     paramIndex = 0;
     key = keys[i++];
 
-    if (!key) {
-      return done();
-    }
+    if (!key) return done();
 
     name = key.name;
     paramVal = req.params[name];
     paramCallbacks = params[name];
     paramCalled = called[name];
 
-    if (paramVal === undefined || !paramCallbacks) {
-      return param();
-    }
+    if (paramVal === undefined || !paramCallbacks) return param();
 
     // param previously called with same value or error occurred
     if (paramCalled && (paramCalled.match === paramVal
@@ -373,7 +352,7 @@ proto.process_params = function process_params(layer, called, req, res, done) {
 
   // single param callbacks
   function paramCallback(err) {
-    var fn = paramCallbacks[paramIndex++];
+    const fn = paramCallbacks[paramIndex++];
 
     // store updated value
     paramCalled.value = req.params[key.name];
@@ -413,17 +392,15 @@ proto.process_params = function process_params(layer, called, req, res, done) {
  */
 
 proto.use = function use(fn) {
-  var offset = 0;
-  var path = '/';
+  let offset = 0;
+  let path = '/';
 
   // default path to '/'
   // disambiguate router.use([fn])
   if (typeof fn !== 'function') {
-    var arg = fn;
+    let arg = fn;
 
-    while (Array.isArray(arg) && arg.length !== 0) {
-      arg = arg[0];
-    }
+    while (Array.isArray(arg) && arg.length !== 0) arg = arg[0];
 
     // first arg is the path
     if (typeof arg !== 'function') {
@@ -432,23 +409,21 @@ proto.use = function use(fn) {
     }
   }
 
-  var callbacks = flatten(slice.call(arguments, offset));
+  const callbacks = flatten(slice.call(arguments, offset));
 
-  if (callbacks.length === 0) {
-    throw new TypeError('Router.use() requires middleware functions');
-  }
+  const l = callbacks.length;
 
-  for (var i = 0; i < callbacks.length; i++) {
-    var fn = callbacks[i];
+  if (l === 0) throw new TypeError('Router.use() requires middleware functions');
 
-    if (typeof fn !== 'function') {
-      throw new TypeError('Router.use() requires middleware function but got a ' + gettype(fn));
-    }
+  for (var i = 0; i < l; i++) {
+    const fn = callbacks[i];
+
+    if (typeof fn !== 'function') throw new TypeError(`Router.use() requires middleware function but got a ${fn.costructor.name}`);
 
     // add the middleware
-    debug('use %s %s', path, fn.name || '<anonymous>');
+    debug(`use ${path} ${fn.name || '<anonymous>'}`);
 
-    var layer = new Layer(path, {
+    const layer = new Layer(path, {
       sensitive: this.caseSensitive,
       strict: false,
       end: false
@@ -476,9 +451,9 @@ proto.use = function use(fn) {
  */
 
 proto.route = function route(path) {
-  var route = new Route(path);
+  const route = new Route(path);
 
-  var layer = new Layer(path, {
+  const layer = new Layer(path, {
     sensitive: this.caseSensitive,
     strict: this.strict,
     end: true
@@ -491,9 +466,10 @@ proto.route = function route(path) {
 };
 
 // create Router#VERB functions
+const l = methods.length;
 methods.concat('all').forEach(function(method){
   proto[method] = function(path){
-    var route = this.route(path)
+    const route = this.route(path);
     route[method].apply(route, slice.call(arguments, 1));
     return this;
   };
@@ -501,34 +477,11 @@ methods.concat('all').forEach(function(method){
 
 // append methods to a list of methods
 function appendMethods(list, addition) {
-  for (var i = 0; i < addition.length; i++) {
-    var method = addition[i];
-    if (list.indexOf(method) === -1) {
-      list.push(method);
-    }
+  const l = addition.length;
+  for (let i = 0; i < l; i++) {
+    const method = addition[i];
+    if (list.indexOf(method) === -1) list.push(method);
   }
-}
-
-// get pathname of request
-function getPathname(req) {
-  try {
-    return parseUrl(req).pathname;
-  } catch (err) {
-    return undefined;
-  }
-}
-
-// get type for error message
-function gettype(obj) {
-  var type = typeof obj;
-
-  if (type !== 'object') {
-    return type;
-  }
-
-  // inspect [[Class]] for objects
-  return toString.call(obj)
-    .replace(objectRegExp, '$1');
 }
 
 /**
@@ -549,56 +502,49 @@ function matchLayer(layer, path) {
 
 // merge params with parent params
 function mergeParams(params, parent) {
-  if (typeof parent !== 'object' || !parent) {
-    return params;
-  }
+  if (typeof parent !== 'object' || !parent) return params;
 
   // make copy of parent for base
-  var obj = mixin({}, parent);
+  const obj = mixin({}, parent);
 
   // simple non-numeric merging
-  if (!(0 in params) || !(0 in parent)) {
-    return mixin(obj, params);
-  }
+  if (!(0 in params) || !(0 in parent)) return mixin(obj, params);
 
-  var i = 0;
-  var o = 0;
+  let i = 0;
+  let o = 0;
 
   // determine numeric gaps
-  while (i in params) {
-    i++;
-  }
+  while (i in params) i++;
 
-  while (o in parent) {
-    o++;
-  }
+  while (o in parent) o++;
 
   // offset numeric indices in params before merge
   for (i--; i >= 0; i--) {
     params[i + o] = params[i];
 
     // create holes for the merge when necessary
-    if (i < o) {
-      delete params[i];
-    }
+    if (i < o) delete params[i];
   }
 
+  //todo obj assig???
   return mixin(obj, params);
 }
 
 // restore obj props after function
 function restore(fn, obj) {
-  var props = new Array(arguments.length - 2);
-  var vals = new Array(arguments.length - 2);
+  const props = new Array(arguments.length - 2);
+  const vals = new Array(arguments.length - 2);
 
-  for (var i = 0; i < props.length; i++) {
+  const l = props.length;
+  for (let i = 0; i < l; i++) {
     props[i] = arguments[i + 2];
     vals[i] = obj[props[i]];
   }
 
   return function(err){
     // restore vals
-    for (var i = 0; i < props.length; i++) {
+    const l = props.length;
+    for (let i = 0; i < l; i++) {
       obj[props[i]] = vals[i];
     }
 
@@ -609,7 +555,7 @@ function restore(fn, obj) {
 // send an OPTIONS response
 function sendOptionsResponse(res, options, next) {
   try {
-    var body = options.join(',');
+    const body = options.join(',');
     res.set('Allow', body);
     res.send(body);
   } catch (err) {
@@ -620,10 +566,11 @@ function sendOptionsResponse(res, options, next) {
 // wrap a function
 function wrap(old, fn) {
   return function proxy() {
-    var args = new Array(arguments.length + 1);
+    const args = new Array(arguments.length + 1);
 
     args[0] = old;
-    for (var i = 0, len = arguments.length; i < len; i++) {
+    const l = arguments.length;
+    for (let i = 0; i < l; i++) {
       args[i + 1] = arguments[i];
     }
 

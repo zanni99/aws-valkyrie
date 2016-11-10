@@ -19,16 +19,12 @@ const Layer = require('./layer');
 const debug = require('./../Utils').debug;
 const flatten = require('./../Utils').flatten;
 
-//todo questi devono andare
-var mixin = require('utils-merge');
-
 /**
  * Module variables.
  * @private
  */
 
 const slice = Array.prototype.slice;
-const toString = Object.prototype.toString;
 
 /**
  * Initialize a new `Router` with the given `options`.
@@ -505,10 +501,10 @@ function mergeParams(params, parent) {
   if (typeof parent !== 'object' || !parent) return params;
 
   // make copy of parent for base
-  const obj = mixin({}, parent);
+  const obj = Object.assign({}, parent);
 
   // simple non-numeric merging
-  if (!(0 in params) || !(0 in parent)) return mixin(obj, params);
+  if (!(0 in params) || !(0 in parent)) return Object.assign(obj, params);
 
   let i = 0;
   let o = 0;
@@ -526,8 +522,7 @@ function mergeParams(params, parent) {
     if (i < o) delete params[i];
   }
 
-  //todo obj assig???
-  return mixin(obj, params);
+  return Object.assign(obj, params);
 }
 
 // restore obj props after function

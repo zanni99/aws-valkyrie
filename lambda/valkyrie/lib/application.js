@@ -157,7 +157,6 @@ app.lazyrouter = function lazyrouter() {
 app.handle = function handle(req, res, callback) {
   var router = this._router;
 
-  console.log('app.handle ====>',req.path);
   // final handler
   var done = callback || function() { res.status(500).send('layer error'); };//finalhandler(req, res, {
     //env: this.get('env'),
@@ -214,7 +213,6 @@ app.use = function use(fn) {
   var router = this._router;
 
   fns.forEach(function (fn) {
-    console.log('ffffff', path)
     // non-express app
     if (!fn || !fn.handle || !fn.set) {
       return router.use(path, fn);

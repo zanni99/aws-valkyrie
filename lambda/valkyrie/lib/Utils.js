@@ -56,6 +56,6 @@ module.exports = class Utils {
   }
 
   static debug() {
-    console.log.apply(console, Array.from(arguments));
+    //console.log.apply(console, Array.from(arguments));
   }
 };

@@ -16,8 +16,8 @@
 const methods = require('methods');
 const Route = require('./route');
 const Layer = require('./layer');
-const debug = require('./../Utils').debug('valkyrie:router', 'green');
-const flatten = require('./../Utils').flatten;
+const debug = require('./../valk-utils').debug('valkyrie:router', 'green');
+const flatten = require('./../valk-utils').flatten;
 
 /**
  * Module variables.

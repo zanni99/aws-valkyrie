@@ -438,7 +438,6 @@ proto.describe = function describe(indent) {
 };
 
 // create Router#VERB functions
-const l = methods.length;
 methods.concat('all').forEach(function(method){
   proto[method] = function(path){
     const route = this.route(path);

@@ -14,9 +14,9 @@
  */
 
 const methods = require('methods');
-const Route = require('./route');
-const Layer = require('./layer');
-const debug = require('./../valk-utils').debug('valkyrie:router', 'green');
+const Route   = require('./route');
+const Layer   = require('./layer');
+const debug   = require('./../valk-utils').debug('valkyrie:router', 'green');
 const flatten = require('./../valk-utils').flatten;
 
 /**
@@ -174,12 +174,12 @@ proto.handle = function handle(req, res, out) {
     }
 
     // get pathname of request
-    var path = req.url;
+    const path = req.url;
 
     // find next matching layer
-    var layer;
-    var match;
-    var route;
+    let layer;
+    let match;
+    let route;
 
     const l = stack.length;
     while (match !== true && idx < l) {

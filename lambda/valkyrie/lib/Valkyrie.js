@@ -40,7 +40,7 @@ module.exports = class Valkyrie {
     mixin(app, EventEmitter.prototype, false);
     mixin(app, proto, false);
 
-    app.request = {}//{ __proto__: req, app: app };
+    app.request = {};//{ __proto__: req, app: app };
     app.response = new Response(app);
     app.init();
     return app;

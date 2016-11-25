@@ -382,7 +382,7 @@ proto.use = function use(fn) {
 
   if (l === 0) throw new TypeError('Router.use() requires middleware functions');
 
-  for (var i = 0; i < l; i++) {
+  for (let i = 0; i < l; i++) {
     const fn = callbacks[i];
     if (typeof fn !== 'function') throw new TypeError(`Router.use() requires middleware function but got a ${fn.costructor.name}`);
 

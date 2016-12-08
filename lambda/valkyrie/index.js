@@ -1,2 +1,2 @@
 'use strict';
-module.exports = require('./lib/Valkyrie');
+module.exports = require('./lib/valkyrie');

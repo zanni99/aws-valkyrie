@@ -49,7 +49,7 @@ module.exports = class Valkyrie {
   /**
    * Expose constructors.
    */
-  //todo rotue non l'ho mai usate, verificare se funzia ancora
+  //todo route non l'ho mai usate, verificare se funzia ancora
   static Route(path) { return new Route(path); }
   static Router(options) { return new Router(options); }
 

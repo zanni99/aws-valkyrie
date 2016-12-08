@@ -1,6 +1,6 @@
 'use strict';
 
-const valkyrie = require('./valkyrie/lib/Valkyrie');
+const valkyrie = require('./valkyrie/index');
 const app = new valkyrie();
 const router = valkyrie.Router();
 const router2 = valkyrie.Router();
@@ -56,7 +56,8 @@ exports.handler = (req, context, callback) => {
   });
 
   app.get('/log-request', (req, res, next) => {
-    res.send(req);
+
+    res.send(req._apiGatewayReqestObject);
   });
 
   router.use((req, res, next) => {
@@ -90,4 +91,5 @@ exports.handler = (req, context, callback) => {
   //app.listen(8080, () => {console.log('listening 8080')})
   app.describe();
   app.start(req, context, callback);
+
 };

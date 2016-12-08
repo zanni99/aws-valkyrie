@@ -612,8 +612,10 @@ app.render = function render(name, options, callback) {
  */
 
 //const Response = require('./../old_lib/Response');
+const Requrest = require('./request');
 //const formatRequest = require('./../old_lib/format-request');
 
+const request = require('./request');
 app.start = function (req, context, callback) {
   console.log('started');
   this._started = true;
@@ -626,13 +628,16 @@ app.start = function (req, context, callback) {
   //console.log(r);
   //this.response.send('ciaone');
   //this.response.send('ciao');
-  const formatRequest = require('./format-request');
-  this.req = formatRequest(req, this);
+  //const formatRequest = require('./format-request');
+  this.req = new Requrest(this, req);
+
   //this.res = new Response(this);
 
   //this.req.res = this.res;
   //this.res.req = this.req;
-  this.handle(req, this.response)
+
+
+  this.handle(this.req, this.response)
 };
 
 app.listen = function listen() {

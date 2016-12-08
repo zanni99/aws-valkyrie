@@ -39,7 +39,7 @@ var vary = require('vary');
  * @private
  */
 
-var charsetRegExp = /;\s*charset\s*=/;
+const charsetRegExp = /;\s*charset\s*=/;
 
 module.exports = class Response {
   constructor(app) {
@@ -152,8 +152,8 @@ module.exports = class Response {
     }
 
     // populate ETag
-    var etag;
-    var generateETag = len !== undefined && app.get('etag fn');
+    let etag;
+    const generateETag = len !== undefined && app.get('etag fn');
     if (typeof generateETag === 'function' && !this.get('ETag')) {
       if ((etag = generateETag(chunk, encoding))) {
         this.set('ETag', etag);
@@ -672,7 +672,7 @@ module.exports = class Response {
     return this;
   }
 
-  header(field, val) { return set(field, val) };
+  header(field, val) { return this.set(field, val) };
 
   /**
    * Get value for header `field`.

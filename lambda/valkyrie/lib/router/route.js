@@ -10,7 +10,7 @@ const Layer = require('./layer');
  * @private
  */
 
-var toString = Object.prototype.toString;
+const toString = Object.prototype.toString;
 
 class Route {
   /**
@@ -49,14 +49,14 @@ class Route {
    * @private
    */
   _options() {
-    var methods = Object.keys(this.methods);
+    const methods = Object.keys(this.methods);
 
     // append automatic head
     if (this.methods.get && !this.methods.head) methods.push('head');
 
     // make upper case
     const l = methods.length;
-    for (var i = 0; i < l; i++) methods[i] = methods[i].toUpperCase();
+    for (let i = 0; i < l; i++) methods[i] = methods[i].toUpperCase();
 
     return methods;
   };
@@ -135,7 +135,7 @@ class Route {
   _add_layer(method, handles) {
     const l = handles.length;
     for (let i = 0; i < l; i++) {
-      var handle = handles[i];
+      const handle = handles[i];
 
       if (typeof handle !== 'function') {
         const type = toString.call(handle);

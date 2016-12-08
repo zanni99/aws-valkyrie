@@ -101,7 +101,7 @@ module.exports = class Layer {
       return true;
     }
 
-    var m = this.regexp.exec(path);
+    const m = this.regexp.exec(path);
 
     if (!m) {
       this.params = undefined;

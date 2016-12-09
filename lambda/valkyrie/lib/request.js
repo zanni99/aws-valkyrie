@@ -15,26 +15,21 @@
 
 const accepts = require('accepts');
 const parseRange = require('range-parser');
-var deprecate = require('depd')('express');
+const typeis = require('type-is');
 var isIP = require('net').isIP;
-var typeis = require('type-is');
 var http = require('http');
 var fresh = require('fresh');
 var parse = require('parseurl');
 var proxyaddr = require('proxy-addr');
 
-/**
- * Request prototype.
- */
-
-/*var req = exports = module.exports = {
-  __proto__: http.IncomingMessage.prototype
-};*/
-
 module.exports = class Request {
   constructor(app, apiGatewayReqestObject) {
     this._apiGatewayReqestObject = apiGatewayReqestObject;
     this.app = app;
+    this.params = {};
+   
+    //TODO this will be removed when router will be refactored
+    this.url = this.path;
 
     const keys = Object.keys(apiGatewayReqestObject);
     const l = keys.length;
@@ -63,13 +58,6 @@ module.exports = class Request {
           this[key] = apiGatewayReqestObject[key];
       }
     }
-
-    this.params = {};
-
-
-    //todo this will be removed when router is refactored
-    this.url = this.path;
-
     return this;
   }
 
@@ -243,85 +231,49 @@ module.exports = class Request {
     if (!range) return;
     return parseRange(size, range, options);
   };
-
+  
   /**
-   * Return the value of param `name` when present or `defaultValue`.
-   *
-   *  - Checks route placeholders, ex: _/user/:id_
-   *  - Checks body params, ex: id=12, {"id":12}
-   *  - Checks query string params, ex: ?id=12
-   *
-   * To utilize request bodies, `req.body`
-   * should be an object. This can be done by using
-   * the `bodyParser()` middleware.
-   *
-   * @param {String} name
-   * @param {Mixed} [defaultValue]
-   * @return {String}
-   * @public
-   */
+  * Check if the incoming request contains the "Content-Type"
+  * header field, and it contains the give mime `type`.
+  *
+  * Examples:
+  *
+  *      // With Content-Type: text/html; charset=utf-8
+  *      req.is('html');
+  *      req.is('text/html');
+  *      req.is('text/*');
+  *      // => true
+  *
+  *      // When Content-Type is application/json
+  *      req.is('json');
+  *      req.is('application/json');
+  *      req.is('application/*');
+  *      // => true
+  *
+  *      req.is('html');
+  *      // => false
+  *
+  * @param {String|Array} types...
+  * @return {String|false|null}
+  * @public
+  */
 
-  param(name, defaultValue) {
-    const params = this.params || {};
-    const body = this.body || {};
-    const query = this.query || {};
+  is(types) {
+    let arr = types;
 
-    const args = arguments.length === 1
-      ? 'name'
-      : 'name, default';
+    // support flattened arguments
+    if (!Array.isArray(types)) {
+      arr = new Array(arguments.length);
+      const l = arr.length
+      for (var i = 0; i < l; i++) {
+        arr[i] = arguments[i];
+      }
+    }
 
-    deprecate('req.param(' + args + '): Use req.params, req.body, or req.query instead');
-
-    if (null != params[name] && params.hasOwnProperty(name)) return params[name];
-    if (null != body[name]) return body[name];
-    if (null != query[name]) return query[name];
-
-    return defaultValue;
+    return typeis(this, arr);
   };
-
 };
 
-//
-// /**
-//  * Check if the incoming request contains the "Content-Type"
-//  * header field, and it contains the give mime `type`.
-//  *
-//  * Examples:
-//  *
-//  *      // With Content-Type: text/html; charset=utf-8
-//  *      req.is('html');
-//  *      req.is('text/html');
-//  *      req.is('text/*');
-//  *      // => true
-//  *
-//  *      // When Content-Type is application/json
-//  *      req.is('json');
-//  *      req.is('application/json');
-//  *      req.is('application/*');
-//  *      // => true
-//  *
-//  *      req.is('html');
-//  *      // => false
-//  *
-//  * @param {String|Array} types...
-//  * @return {String|false|null}
-//  * @public
-//  */
-//
-// req.is = function is(types) {
-//   var arr = types;
-//
-//   // support flattened arguments
-//   if (!Array.isArray(types)) {
-//     arr = new Array(arguments.length);
-//     for (var i = 0; i < arr.length; i++) {
-//       arr[i] = arguments[i];
-//     }
-//   }
-//
-//   return typeis(this, arr);
-// };
-//
 // /**
 //  * Return the protocol string "http" or "https"
 //  * when requested with TLS. When the "trust proxy"
